@@ -19,3 +19,4 @@ Thumbs.db
 *.log
 *.tmp
 backend/log.txt
+backend/src/main/resources/application.properties
