@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "assets")
-public class DigitalAsset {
+public class Asset {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,14 +50,14 @@ public class DigitalAsset {
     protected void onCreate() {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (status == null) status = Status.ACTIVE;
+        if (pricePerMonth == null) pricePerMonth = BigDecimal.ZERO;
     }
 
-    public DigitalAsset() {}
+    public Asset() {}
 
     public enum AssetType { DATASET, API }
     public enum Status { ACTIVE, INACTIVE, DELETED }
 
-    // Getters and Setters
     public Long getAssetId() { return assetId; }
     public void setAssetId(Long assetId) { this.assetId = assetId; }
     public Long getProviderId() { return providerId; }

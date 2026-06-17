@@ -1,53 +1,51 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center p-4">
-    <div class="glass-card p-8 w-full max-w-md">
-      <div class="text-center mb-8">
-        <div class="w-14 h-14 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center mx-auto mb-4">
-          <span class="text-white font-bold text-xl">DH</span>
+  <div class="flex min-h-screen items-center justify-center bg-slate-50 p-3">
+    <div class="glass-card w-full max-w-sm p-4">
+      <div class="mb-5 text-center">
+        <div class="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-sm bg-amber-500">
+          <span class="text-base font-bold text-white">DH</span>
         </div>
-        <h1 class="text-2xl font-bold text-white">注册 DataHub</h1>
-        <p class="text-slate-400 mt-2 text-sm">加入开发者社区，共享数据资产</p>
+        <h1 class="text-xl font-bold text-slate-900">注册 DataHub</h1>
+        <p class="mt-1 text-sm text-slate-500">加入开发者社区，共享数据资产</p>
       </div>
 
-      <form @submit.prevent="handleRegister" class="space-y-4">
+      <form @submit.prevent="handleRegister" class="space-y-3">
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">用户名</label>
+          <label class="mb-1 block text-sm text-slate-700">用户名</label>
           <input v-model="form.username" class="glass-input" placeholder="2-50个字符" required />
         </div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">邮箱</label>
+          <label class="mb-1 block text-sm text-slate-700">邮箱</label>
           <input v-model="form.email" class="glass-input" type="email" placeholder="your@email.com" required />
         </div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">密码</label>
+          <label class="mb-1 block text-sm text-slate-700">密码</label>
           <input v-model="form.password" class="glass-input" type="password" placeholder="至少6位" required />
         </div>
         <div>
-          <label class="block text-sm text-slate-300 mb-1.5">角色</label>
-          <div class="grid grid-cols-2 gap-3">
+          <label class="mb-1 block text-sm text-slate-700">角色</label>
+          <div class="grid grid-cols-2 gap-2">
             <button type="button" @click="form.role = 'PROVIDER'"
-              :class="form.role === 'PROVIDER' ? 'border-primary bg-primary/10 text-primary' : 'border-dark-border text-slate-400'"
-              class="p-3 rounded-lg border transition-all text-center">
-              <div class="text-lg mb-1">📦</div>
+              :class="form.role === 'PROVIDER' ? 'border-amber-400 bg-amber-50 text-amber-700' : 'border-slate-200 text-slate-500'"
+              class="rounded-sm border p-3 text-center transition-colors">
               <div class="text-sm font-medium">Provider</div>
               <div class="text-xs opacity-70">发布数据资产</div>
             </button>
             <button type="button" @click="form.role = 'SUBSCRIBER'"
-              :class="form.role === 'SUBSCRIBER' ? 'border-accent bg-accent/10 text-accent' : 'border-dark-border text-slate-400'"
-              class="p-3 rounded-lg border transition-all text-center">
-              <div class="text-lg mb-1">🔍</div>
+              :class="form.role === 'SUBSCRIBER' ? 'border-amber-400 bg-amber-50 text-amber-700' : 'border-slate-200 text-slate-500'"
+              class="rounded-sm border p-3 text-center transition-colors">
               <div class="text-sm font-medium">Subscriber</div>
               <div class="text-xs opacity-70">浏览订阅数据</div>
             </button>
           </div>
         </div>
-        <p v-if="error" class="text-red-400 text-sm">{{ error }}</p>
+        <p v-if="error" class="text-red-600 text-sm">{{ error }}</p>
         <button type="submit" class="btn-primary w-full" :disabled="loading">
           {{ loading ? '注册中...' : '注册' }}
         </button>
       </form>
 
-      <p class="text-center text-slate-400 text-sm mt-6">
+      <p class="mt-4 text-center text-sm text-slate-500">
         已有账号？
         <router-link to="/login" class="text-primary hover:underline">立即登录</router-link>
       </p>

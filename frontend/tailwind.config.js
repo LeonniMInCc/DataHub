@@ -7,11 +7,11 @@ export default {
   theme: {
     extend: {
       colors: {
-        primary: '#3B82F6',
-        accent: '#10B981',
-        dark: '#0F172A',
-        'dark-card': 'rgba(30, 41, 59, 0.7)',
-        'dark-border': 'rgba(71, 85, 105, 0.5)',
+        primary: '#F59E0B',
+        accent: '#EAB308',
+        surface: '#F8FAFC',
+        'surface-card': '#FFFFFF',
+        'surface-border': '#E5E7EB',
       }
     },
   },

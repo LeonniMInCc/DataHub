@@ -10,10 +10,10 @@ CREATE DATABASE IF NOT EXISTS datahub
 USE datahub;
 
 -- ============================
--- 1. 开发者表 (developers)
+-- 1. 用户表 (users)
 -- ============================
-CREATE TABLE developers (
-  dev_id      BIGINT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE users (
+  user_id     BIGINT AUTO_INCREMENT PRIMARY KEY,
   username    VARCHAR(50)  NOT NULL UNIQUE,
   password_hash VARCHAR(255) NOT NULL,
   email       VARCHAR(100) NOT NULL UNIQUE,
@@ -22,16 +22,16 @@ CREATE TABLE developers (
   avatar      VARCHAR(500) DEFAULT NULL,
   created_at  DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-  INDEX idx_developers_username (username),
-  INDEX idx_developers_email (email),
-  INDEX idx_developers_role (role),
-  INDEX idx_developers_api_key (api_key)
+  INDEX idx_users_username (username),
+  INDEX idx_users_email (email),
+  INDEX idx_users_role (role),
+  INDEX idx_users_api_key (api_key)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- ============================
--- 2. 数字资产表 (digital_assets)
+-- 2. 资产表 (assets)
 -- ============================
-CREATE TABLE digital_assets (
+CREATE TABLE assets (
   asset_id      BIGINT AUTO_INCREMENT PRIMARY KEY,
   provider_id   BIGINT       NOT NULL,
   title         VARCHAR(200) NOT NULL,
@@ -50,7 +50,7 @@ CREATE TABLE digital_assets (
   INDEX idx_assets_tags (tags),
 
   CONSTRAINT fk_assets_provider
-    FOREIGN KEY (provider_id) REFERENCES developers(dev_id)
+    FOREIGN KEY (provider_id) REFERENCES users(user_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -66,7 +66,7 @@ CREATE TABLE subscriptions (
   quota_used    INT      NOT NULL DEFAULT 0,
   start_date    DATE     NOT NULL,
   end_date      DATE     NOT NULL,
-  status        ENUM('ACTIVE', 'EXPIRED', 'CANCELLED') NOT NULL DEFAULT 'ACTIVE',
+  status        ENUM('PENDING_PAYMENT', 'ACTIVE', 'FAILED', 'EXPIRED', 'CANCELLED') NOT NULL DEFAULT 'PENDING_PAYMENT',
   created_at    DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
   INDEX idx_sub_subscriber (subscriber_id),
@@ -77,12 +77,12 @@ CREATE TABLE subscriptions (
   UNIQUE KEY uk_sub_asset_user (subscriber_id, asset_id),
 
   CONSTRAINT fk_sub_subscriber
-    FOREIGN KEY (subscriber_id) REFERENCES developers(dev_id)
+    FOREIGN KEY (subscriber_id) REFERENCES users(user_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
 
   CONSTRAINT fk_sub_asset
-    FOREIGN KEY (asset_id) REFERENCES digital_assets(asset_id)
+    FOREIGN KEY (asset_id) REFERENCES assets(asset_id)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

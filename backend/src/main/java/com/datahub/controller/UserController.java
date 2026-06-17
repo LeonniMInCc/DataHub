@@ -2,8 +2,8 @@ package com.datahub.controller;
 
 import com.datahub.dto.ApiResponse;
 import com.datahub.entity.Developer;
+import com.datahub.repository.AssetRepository;
 import com.datahub.repository.DeveloperRepository;
-import com.datahub.service.AssetService;
 import com.datahub.service.SubscriptionService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +15,13 @@ import java.util.*;
 public class UserController {
 
     private final DeveloperRepository devRepo;
-    private final AssetService assetService;
+    private final AssetRepository assetRepo;
     private final SubscriptionService subscriptionService;
 
-    public UserController(DeveloperRepository devRepo, AssetService assetService,
+    public UserController(DeveloperRepository devRepo, AssetRepository assetRepo,
                           SubscriptionService subscriptionService) {
         this.devRepo = devRepo;
-        this.assetService = assetService;
+        this.assetRepo = assetRepo;
         this.subscriptionService = subscriptionService;
     }
 
@@ -34,7 +34,7 @@ public class UserController {
         long publishedAssets = 0;
         long subscribedAssets = 0;
         if (dev.getRole() == Developer.Role.PROVIDER) {
-            publishedAssets = devRepo.countByRole(Developer.Role.PROVIDER);
+            publishedAssets = assetRepo.countByProviderId(devId);
         }
         subscribedAssets = subscriptionService.getSubscriptionCount(devId);
 

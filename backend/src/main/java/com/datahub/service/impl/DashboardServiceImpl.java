@@ -1,7 +1,7 @@
 package com.datahub.service.impl;
 
 import com.datahub.dto.DashboardDTO;
-import com.datahub.entity.DigitalAsset;
+import com.datahub.entity.Asset;
 import com.datahub.repository.*;
 import com.datahub.service.DashboardService;
 import org.springframework.stereotype.Service;
@@ -14,11 +14,11 @@ import java.util.stream.Collectors;
 public class DashboardServiceImpl implements DashboardService {
 
     private final DeveloperRepository devRepo;
-    private final DigitalAssetRepository assetRepo;
+    private final AssetRepository assetRepo;
     private final SubscriptionRepository subRepo;
     private final UsageLogRepository logRepo;
 
-    public DashboardServiceImpl(DeveloperRepository devRepo, DigitalAssetRepository assetRepo,
+    public DashboardServiceImpl(DeveloperRepository devRepo, AssetRepository assetRepo,
                                 SubscriptionRepository subRepo, UsageLogRepository logRepo) {
         this.devRepo = devRepo;
         this.assetRepo = assetRepo;
@@ -29,7 +29,7 @@ public class DashboardServiceImpl implements DashboardService {
     @Override
     public DashboardDTO getDashboardData() {
         long totalUsers = devRepo.count();
-        long totalAssets = assetRepo.countByStatus(DigitalAsset.Status.ACTIVE);
+        long totalAssets = assetRepo.countByStatus(Asset.Status.ACTIVE);
         long totalSubscriptions = subRepo.count();
         long totalApiCalls = logRepo.count();
 
@@ -59,7 +59,7 @@ public class DashboardServiceImpl implements DashboardService {
             Long assetId = (Long) row[0];
             Long subCount = (Long) row[1];
             String title = assetRepo.findById(assetId)
-                    .map(DigitalAsset::getTitle)
+                    .map(Asset::getTitle)
                     .orElse("未知资产");
 
             Map<String, Object> item = new LinkedHashMap<>();

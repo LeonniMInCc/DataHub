@@ -1,6 +1,7 @@
 package com.datahub.controller;
 
 import com.datahub.dto.ApiResponse;
+import com.datahub.dto.SubscriptionResponse;
 import com.datahub.dto.SubscribeRequest;
 import com.datahub.entity.Subscription;
 import com.datahub.service.SubscriptionService;
@@ -21,10 +22,19 @@ public class SubscriptionController {
     }
 
     @PostMapping
-    public ApiResponse<Subscription> subscribe(@Valid @RequestBody SubscribeRequest request,
-                                                Authentication auth) {
+    public ApiResponse<SubscriptionResponse> subscribe(@Valid @RequestBody SubscribeRequest request,
+                                                       Authentication auth) {
         Long subscriberId = (Long) auth.getPrincipal();
-        return ApiResponse.success("订阅成功", subscriptionService.subscribe(subscriberId, request.getAssetId()));
+        Subscription subscription = subscriptionService.subscribe(
+                subscriberId,
+                request.getAssetId(),
+                request.getMockPaymentSuccess()
+        );
+        SubscriptionResponse response = SubscriptionResponse.from(subscription);
+        if (subscription.getStatus() == Subscription.SubStatus.ACTIVE) {
+            return ApiResponse.success("订阅成功！已开通该数据资产的使用权限。", response);
+        }
+        return new ApiResponse<>(402, "付款确认失败，请重新尝试支付！", response);
     }
 
     @DeleteMapping("/{id}")
@@ -35,8 +45,11 @@ public class SubscriptionController {
     }
 
     @GetMapping("/my")
-    public ApiResponse<List<Subscription>> mySubscriptions(Authentication auth) {
+    public ApiResponse<List<SubscriptionResponse>> mySubscriptions(Authentication auth) {
         Long subscriberId = (Long) auth.getPrincipal();
-        return ApiResponse.success(subscriptionService.getMySubscriptions(subscriberId));
+        return ApiResponse.success(subscriptionService.getMySubscriptions(subscriberId)
+                .stream()
+                .map(SubscriptionResponse::from)
+                .toList());
     }
 }

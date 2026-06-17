@@ -1,72 +1,90 @@
-# DataHub - 开发者数字资产共享平台
+# DataHub 开发者数字资产共享平台
 
-> 大学《数据库系统原理》课程项目
+DataHub 是一个面向开发者的数据资产共享与订阅平台，支持 Provider 发布数据集/API，Subscriber 浏览资产、模拟支付订阅并查看额度使用情况。项目采用前后端分离架构，包含完整的数据库建表脚本、测试数据、REST API、JWT 登录认证和 ECharts 数据仪表盘。
 
-## 项目介绍
+本项目适合作为《数据库系统原理》课程设计或全栈开发练习项目。
 
-DataHub 是一个面向开发者的数字资产交易平台。平台允许开发者发布数据集和 API，浏览其他开发者的数据资产，订阅数据资产，查看调用记录和统计分析。
+## 核心功能
 
-平台包含两类角色：
-- **数据提供者（Provider）**：发布和管理数据资产，查看订阅情况和调用统计
-- **数据订阅者（Subscriber）**：浏览、搜索、订阅数据资产，查看调用记录
+| 模块 | 功能 |
+|------|------|
+| 用户认证 | 注册、登录、JWT 无状态认证、BCrypt 密码加密 |
+| 角色权限 | Provider 可发布资产；Subscriber 可订阅资产 |
+| 资产市场 | 数据集/API 列表、关键字搜索、类型筛选、分页、价格/时间排序 |
+| 资产管理 | 发布、查看详情、更新、软删除资产 |
+| 订阅系统 | 扫码支付展示、支付成功/失败模拟、防重复订阅、取消订阅 |
+| 个人中心 | 用户资料、API Key、角色身份、资产/订阅数量 |
+| 数据仪表盘 | 用户数、资产数、订阅数、调用数、资产类型分布、热门资产、近 7 天调用趋势 |
 
 ## 技术栈
 
 | 层级 | 技术 |
 |------|------|
-| 后端 | Java 17, Spring Boot 3.2, Spring Security, JWT, JPA |
-| 前端 | Vue 3, Vite, Pinia, Vue Router, Axios, Tailwind CSS, ECharts |
-| 数据库 | MySQL 8.0 |
-| 构建 | Maven, npm |
+| 后端 | Java 17, Spring Boot 3.4.5, Spring Web, Spring Security, Spring Data JPA, Validation |
+| 认证 | JWT, BCrypt |
+| 数据库 | MySQL 8.0；Demo 模式使用 H2 内存数据库 |
+| 前端 | Vue 3, Vite 5, Vue Router, Pinia, Axios |
+| UI/图表 | Tailwind CSS, ECharts |
+| 部署 | Docker, Docker Compose |
 
 ## 项目结构
 
-```
-├── backend/                    # Spring Boot 后端
+```text
+.
+├── backend/                         # Spring Boot 后端
 │   ├── pom.xml
-│   └── src/main/java/com/datahub/
-│       ├── DataHubApplication.java
-│       ├── config/             # Security, CORS 配置
-│       ├── entity/             # JPA 实体
-│       ├── repository/         # 数据访问层
-│       ├── service/            # 业务逻辑层
-│       ├── controller/         # REST API 控制器
-│       ├── dto/                # 数据传输对象
-│       ├── security/           # JWT 工具和过滤器
-│       └── exception/          # 全局异常处理
-├── frontend/                   # Vue 3 前端
-│   ├── src/
-│   │   ├── views/              # 页面组件
-│   │   ├── stores/             # Pinia 状态管理
-│   │   ├── router/             # Vue Router 路由
-│   │   └── api/                # Axios 封装
-│   └── package.json
-├── database/                   # 数据库脚本
-│   ├── schema.sql              # DDL + 索引 + 外键
-│   └── test_data.sql           # 测试数据
-└── docs/                       # 项目文档
+│   ├── Dockerfile
+│   └── src/main/
+│       ├── java/com/datahub/
+│       │   ├── config/              # Security、CORS 配置
+│       │   ├── controller/          # REST API 控制器
+│       │   ├── dto/                 # 请求/响应 DTO
+│       │   ├── entity/              # JPA 实体
+│       │   ├── exception/           # 全局异常处理
+│       │   ├── repository/          # 数据访问层
+│       │   ├── security/            # JWT 工具与过滤器
+│       │   └── service/             # 业务逻辑层
+│       └── resources/
+│           ├── application.properties.template
+│           ├── application-docker.properties
+│           ├── application-demo.properties
+│           ├── demo-schema.sql
+│           └── demo-data.sql
+├── frontend/                        # Vue 3 前端
+│   ├── Dockerfile
+│   ├── package.json
+│   └── src/
+│       ├── api/                     # Axios 封装
+│       ├── assets/                  # 全局样式
+│       ├── router/                  # 前端路由
+│       ├── stores/                  # Pinia 状态
+│       ├── utils/                   # 登录状态工具
+│       └── views/                   # 页面组件
+├── database/
+│   ├── schema.sql                   # MySQL 建表、索引、外键
+│   └── test_data.sql                # MySQL 测试数据
+├── docs/
+│   ├── er_diagram.md
+│   ├── defense_ppt.md
+│   └── DataHub.postman_collection.json
+├── docker-compose.yml               # MySQL + 后端 + 前端
+└── docker-compose.demo.yml          # H2 Demo 后端 + 前端
 ```
 
-## 快速开始
+## 快速启动
 
-### 1. 数据库准备
+### 方式一：Demo 模式（无需 MySQL）
 
-```bash
-mysql -u root -p < database/schema.sql
-mysql -u root -p < database/test_data.sql
-```
+Demo 模式使用 H2 内存数据库，启动时自动加载 `demo-schema.sql` 和 `demo-data.sql`。
 
-### 2. 启动后端
+启动后端：
 
 ```bash
 cd backend
-# 修改 src/main/resources/application.properties 中的数据库连接信息
-mvn spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
 ```
 
-后端运行在 http://localhost:8080
-
-### 3. 启动前端
+启动前端：
 
 ```bash
 cd frontend
@@ -74,65 +92,206 @@ npm install
 npm run dev
 ```
 
-前端运行在 http://localhost:5173
+访问地址：
 
-### 4. 测试账号
+| 服务 | 地址 |
+|------|------|
+| 前端 | http://localhost:5173 |
+| 后端 API | http://localhost:8080 |
+| H2 控制台 | http://localhost:8080/h2-console |
+
+H2 控制台连接信息：
+
+```text
+JDBC URL: jdbc:h2:mem:datahub
+User: sa
+Password: 留空
+```
+
+### 方式二：本地 MySQL 模式
+
+准备 MySQL 8.0 数据库：
+
+```bash
+mysql -u root -p < database/schema.sql
+mysql -u root -p < database/test_data.sql
+```
+
+创建后端配置：
+
+```bash
+cd backend
+cp src/main/resources/application.properties.template src/main/resources/application.properties
+```
+
+修改 `backend/src/main/resources/application.properties` 中的数据库账号、密码，然后启动后端：
+
+```bash
+./mvnw spring-boot:run
+```
+
+启动前端：
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 方式三：Docker Compose
+
+当前后端 Dockerfile 会复制 `backend/target/*.jar`，因此需要先构建后端 jar：
+
+```bash
+cd backend
+./mvnw clean package -DskipTests
+```
+
+回到项目根目录启动完整环境：
+
+```bash
+docker compose up --build
+```
+
+该方式会启动：
+
+| 容器 | 端口 | 说明 |
+|------|------|------|
+| datahub-mysql | 3306 | MySQL 8.0，自动执行 `database/schema.sql` 和 `database/test_data.sql` |
+| datahub-backend | 8080 | Spring Boot API，使用 `docker` profile |
+| datahub-frontend | 5173 | Vite 前端服务 |
+
+如果只想用 H2 Demo 容器：
+
+```bash
+docker compose -f docker-compose.demo.yml up --build
+```
+
+## 测试账号
+
+初始化数据中的演示账号密码均为 `password123`。
 
 | 角色 | 用户名 | 密码 |
 |------|--------|------|
 | Provider | zhangsan | password123 |
+| Provider | lisi | password123 |
 | Subscriber | sub_a | password123 |
 
-## API 接口
+MySQL 测试数据还包含 `wangwu`、`sub_b` 等更多账号。
+
+## API 概览
+
+接口统一以 `/api` 为前缀，前端通过 Vite proxy 转发到 `http://localhost:8080`。
 
 ### 认证
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | /api/auth/register | 注册 |
-| POST | /api/auth/login | 登录 |
+| 方法 | 路径 | 权限 | 说明 |
+|------|------|------|------|
+| POST | `/api/auth/register` | 公开 | 注册并返回 JWT |
+| POST | `/api/auth/login` | 公开 | 登录并返回 JWT |
 
 ### 资产
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/assets | 资产列表（分页、搜索、筛选） |
-| GET | /api/assets/{id} | 资产详情 |
-| POST | /api/assets | 发布资产（需认证） |
-| PUT | /api/assets/{id} | 更新资产（需认证） |
-| DELETE | /api/assets/{id} | 删除资产（需认证） |
-| GET | /api/assets/my | 我的资产（需认证） |
+| 方法 | 路径 | 权限 | 说明 |
+|------|------|------|------|
+| GET | `/api/assets` | 公开 | 资产列表，支持 `page`、`size`、`keyword`、`assetType` |
+| GET | `/api/assets/{id}` | 公开 | 资产详情和订阅人数 |
+| POST | `/api/assets` | 登录 | 发布资产 |
+| PUT | `/api/assets/{id}` | 登录 | 更新本人发布的资产 |
+| DELETE | `/api/assets/{id}` | 登录 | 删除本人发布的资产 |
+| GET | `/api/assets/my` | 登录 | 我的资产 |
 
 ### 订阅
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| POST | /api/subscriptions | 订阅资产（需认证） |
-| DELETE | /api/subscriptions/{id} | 取消订阅（需认证） |
-| GET | /api/subscriptions/my | 我的订阅（需认证） |
+| 方法 | 路径 | 权限 | 说明 |
+|------|------|------|------|
+| POST | `/api/subscriptions` | 登录 | 订阅资产，支持 `mockPaymentSuccess` 模拟支付结果 |
+| GET | `/api/subscriptions/my` | 登录 | 我的订阅 |
+| DELETE | `/api/subscriptions/{id}` | 登录 | 取消订阅 |
 
-### 仪表盘
+### 仪表盘和用户
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/dashboard | 仪表盘数据 |
+| 方法 | 路径 | 权限 | 说明 |
+|------|------|------|------|
+| GET | `/api/dashboard` | 公开 | 平台 KPI 和图表数据 |
+| GET | `/api/user/profile` | 登录 | 当前用户资料 |
+| GET | `/api/user/stats` | 登录 | 当前用户统计占位接口 |
 
-### 用户
+通用响应格式：
 
-| 方法 | 路径 | 说明 |
-|------|------|------|
-| GET | /api/user/profile | 个人资料（需认证） |
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {}
+}
+```
 
-## 功能特性
+## 数据库设计
 
-- ✅ JWT 认证与授权
-- ✅ 用户注册/登录
-- ✅ 资产发布/编辑/删除
-- ✅ 资产搜索与分类筛选
-- ✅ 订阅/取消订阅
-- ✅ 重复订阅防护
-- ✅ 数据仪表盘（ECharts 可视化）
-- ✅ 暗色主题 Glassmorphism 毛玻璃 UI
-- ✅ 响应式布局
-- ✅ 统一 JSON 响应格式
-- ✅ 全局异常处理
+MySQL 初始化脚本位于 `database/schema.sql`，核心表如下：
+
+| 表 | 说明 |
+|----|------|
+| `users` | 用户表，保存 Provider/Subscriber、密码哈希、API Key |
+| `assets` | 数据资产表，保存数据集/API 信息、价格、状态、标签 |
+| `subscriptions` | 订阅表，记录订阅周期、额度、状态，并通过唯一约束防重复订阅 |
+| `usage_logs` | 调用日志表，记录请求时间、状态码、响应时间、IP |
+
+关键约束：
+
+- `assets.provider_id -> users.user_id`
+- `subscriptions.subscriber_id -> users.user_id`
+- `subscriptions.asset_id -> assets.asset_id`
+- `usage_logs.sub_id -> subscriptions.sub_id`
+- `subscriptions` 上存在 `uk_sub_asset_user(subscriber_id, asset_id)`，避免同一用户重复订阅同一资产
+
+## 常用开发命令
+
+后端：
+
+```bash
+cd backend
+./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=demo
+./mvnw test
+./mvnw clean package -DskipTests
+```
+
+前端：
+
+```bash
+cd frontend
+npm install
+npm run dev
+npm run build
+npm run preview
+```
+
+Docker：
+
+```bash
+docker compose up --build
+docker compose -f docker-compose.demo.yml up --build
+docker compose down
+```
+
+## 页面路由
+
+| 路由 | 页面 |
+|------|------|
+| `/` | 首页工作台 |
+| `/login` | 登录 |
+| `/register` | 注册 |
+| `/assets` | 资产市场 |
+| `/assets/:id` | 资产详情 |
+| `/publish` | 发布资产，仅 Provider 可进入 |
+| `/subscriptions` | 我的订阅，需登录 |
+| `/dashboard` | 数据仪表盘 |
+| `/profile` | 个人中心，需登录 |
+
+## 补充文档
+
+- `docs/er_diagram.md`：ER 图说明
+- `docs/defense_ppt.md`：课程答辩 PPT 文案
+- `docs/DataHub.postman_collection.json`：Postman 接口集合

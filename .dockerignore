@@ -1,0 +1,6 @@
+**/node_modules
+**/dist
+**/target
+**/.m2
+**/.git
+**/.DS_Store

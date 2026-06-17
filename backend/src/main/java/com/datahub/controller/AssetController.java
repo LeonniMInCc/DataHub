@@ -2,7 +2,8 @@ package com.datahub.controller;
 
 import com.datahub.dto.ApiResponse;
 import com.datahub.dto.AssetRequest;
-import com.datahub.entity.DigitalAsset;
+import com.datahub.dto.AssetResponse;
+import com.datahub.entity.Asset;
 import com.datahub.service.AssetService;
 import com.datahub.service.SubscriptionService;
 import jakarta.validation.Valid;
@@ -26,37 +27,37 @@ public class AssetController {
     }
 
     @GetMapping
-    public ApiResponse<Page<DigitalAsset>> list(
+    public ApiResponse<Page<AssetResponse>> list(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String assetType) {
-        return ApiResponse.success(assetService.listAssets(page, size, keyword, assetType));
+        return ApiResponse.success(assetService.listAssets(page, size, keyword, assetType).map(AssetResponse::from));
     }
 
     @GetMapping("/{id}")
     public ApiResponse<Map<String, Object>> detail(@PathVariable Long id) {
-        DigitalAsset asset = assetService.getAsset(id);
+        Asset asset = assetService.getAsset(id);
         long subCount = subscriptionService.getAssetSubscriberCount(id);
         Map<String, Object> result = new HashMap<>();
-        result.put("asset", asset);
+        result.put("asset", AssetResponse.from(asset));
         result.put("subscriberCount", subCount);
         return ApiResponse.success(result);
     }
 
     @PostMapping
-    public ApiResponse<DigitalAsset> create(@Valid @RequestBody AssetRequest request,
+    public ApiResponse<AssetResponse> create(@Valid @RequestBody AssetRequest request,
                                              Authentication auth) {
         Long providerId = (Long) auth.getPrincipal();
-        return ApiResponse.success("发布成功", assetService.createAsset(providerId, request));
+        return ApiResponse.success("发布成功", AssetResponse.from(assetService.createAsset(providerId, request)));
     }
 
     @PutMapping("/{id}")
-    public ApiResponse<DigitalAsset> update(@PathVariable Long id,
+    public ApiResponse<AssetResponse> update(@PathVariable Long id,
                                              @Valid @RequestBody AssetRequest request,
                                              Authentication auth) {
         Long providerId = (Long) auth.getPrincipal();
-        return ApiResponse.success("更新成功", assetService.updateAsset(id, providerId, request));
+        return ApiResponse.success("更新成功", AssetResponse.from(assetService.updateAsset(id, providerId, request)));
     }
 
     @DeleteMapping("/{id}")
@@ -67,11 +68,11 @@ public class AssetController {
     }
 
     @GetMapping("/my")
-    public ApiResponse<Page<DigitalAsset>> myAssets(
+    public ApiResponse<Page<AssetResponse>> myAssets(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             Authentication auth) {
         Long providerId = (Long) auth.getPrincipal();
-        return ApiResponse.success(assetService.getMyAssets(providerId, page, size));
+        return ApiResponse.success(assetService.getMyAssets(providerId, page, size).map(AssetResponse::from));
     }
 }

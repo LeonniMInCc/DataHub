@@ -1,5 +1,6 @@
 # Maven
 backend/target/
+backend/.m2/
 backend/.mvn/wrapper/maven-wrapper.jar
 
 # Node

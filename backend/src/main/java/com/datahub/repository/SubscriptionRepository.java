@@ -22,6 +22,12 @@ public interface SubscriptionRepository extends JpaRepository<Subscription, Long
 
     long countByAssetId(Long assetId);
 
+    long countBySubscriberIdAndStatus(Long subscriberId, Subscription.SubStatus status);
+
+    long countByAssetIdAndStatus(Long assetId, Subscription.SubStatus status);
+
+    boolean existsBySubscriberIdAndAssetId(Long subscriberId, Long assetId);
+
     boolean existsBySubscriberIdAndAssetIdAndStatus(Long subscriberId, Long assetId, Subscription.SubStatus status);
 
     @Query("SELECT s FROM Subscription s JOIN FETCH s.asset WHERE s.subscriberId = :subscriberId")

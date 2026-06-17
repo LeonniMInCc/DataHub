@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import api from '../api'
+import { AUTH_EXPIRED_EVENT, clearAuthSession } from '../utils/authSession'
 
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(JSON.parse(localStorage.getItem('user') || 'null'))
@@ -31,8 +32,14 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     user.value = null
     token.value = ''
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
+    clearAuthSession()
+  }
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener(AUTH_EXPIRED_EVENT, () => {
+      user.value = null
+      token.value = ''
+    })
   }
 
   return { user, token, isLoggedIn, isProvider, register, login, logout }

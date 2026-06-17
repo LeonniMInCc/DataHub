@@ -5,7 +5,7 @@ import com.datahub.entity.Subscription;
 import java.util.List;
 
 public interface SubscriptionService {
-    Subscription subscribe(Long subscriberId, Long assetId);
+    Subscription subscribe(Long subscriberId, Long assetId, Boolean mockPaymentSuccess);
     void unsubscribe(Long subscriberId, Long subId);
     List<Subscription> getMySubscriptions(Long subscriberId);
     long getSubscriptionCount(Long subscriberId);

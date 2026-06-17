@@ -5,12 +5,12 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
-public class Developer {
+public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private Long devId;
+    private Long userId;
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;
@@ -37,29 +37,17 @@ public class Developer {
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = LocalDateTime.now();
+        if (role == null) role = Role.SUBSCRIBER;
     }
 
-    public Developer() {}
-
-    public Developer(Long devId, String username, String passwordHash, String email,
-                     String apiKey, Role role, String avatar, LocalDateTime createdAt) {
-        this.devId = devId;
-        this.username = username;
-        this.passwordHash = passwordHash;
-        this.email = email;
-        this.apiKey = apiKey;
-        this.role = role;
-        this.avatar = avatar;
-        this.createdAt = createdAt;
-    }
+    public User() {}
 
     public enum Role {
         PROVIDER, SUBSCRIBER
     }
 
-    // Getters and Setters
-    public Long getDevId() { return devId; }
-    public void setDevId(Long devId) { this.devId = devId; }
+    public Long getUserId() { return userId; }
+    public void setUserId(Long userId) { this.userId = userId; }
     public String getUsername() { return username; }
     public void setUsername(String username) { this.username = username; }
     public String getPasswordHash() { return passwordHash; }

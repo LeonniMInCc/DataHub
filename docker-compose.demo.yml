@@ -1,0 +1,22 @@
+services:
+  backend:
+    build:
+      context: ./backend
+    container_name: datahub-backend-demo
+    environment:
+      SPRING_PROFILES_ACTIVE: demo
+      TZ: Asia/Shanghai
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: datahub-frontend-demo
+    environment:
+      VITE_API_PROXY_TARGET: http://backend:8080
+      TZ: Asia/Shanghai
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend

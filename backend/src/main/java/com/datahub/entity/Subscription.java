@@ -5,7 +5,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "subscriptions")
+@Table(name = "subscriptions",
+        uniqueConstraints = @UniqueConstraint(name = "uk_sub_asset_user", columnNames = {"subscriber_id", "asset_id"}))
 public class Subscription {
 
     @Id
@@ -17,15 +18,15 @@ public class Subscription {
     private Long subscriberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "subscriber_id", insertable = false, updatable = false)
-    private Developer subscriber;
+    @JoinColumn(name = "subscriber_id", referencedColumnName = "user_id", insertable = false, updatable = false)
+    private User subscriber;
 
     @Column(name = "asset_id", nullable = false)
     private Long assetId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "asset_id", insertable = false, updatable = false)
-    private DigitalAsset asset;
+    private Asset asset;
 
     @Column(name = "quota_limit", nullable = false)
     private Integer quotaLimit;
@@ -51,24 +52,24 @@ public class Subscription {
         if (createdAt == null) createdAt = LocalDateTime.now();
         if (quotaUsed == null) quotaUsed = 0;
         if (quotaLimit == null) quotaLimit = 1000;
-        if (status == null) status = SubStatus.ACTIVE;
+        if (status == null) status = SubStatus.PENDING_PAYMENT;
     }
 
     public Subscription() {}
 
-    public enum SubStatus { ACTIVE, EXPIRED, CANCELLED }
+    public enum SubStatus { PENDING_PAYMENT, ACTIVE, FAILED, EXPIRED, CANCELLED }
 
     // Getters and Setters
     public Long getSubId() { return subId; }
     public void setSubId(Long subId) { this.subId = subId; }
     public Long getSubscriberId() { return subscriberId; }
     public void setSubscriberId(Long subscriberId) { this.subscriberId = subscriberId; }
-    public Developer getSubscriber() { return subscriber; }
-    public void setSubscriber(Developer subscriber) { this.subscriber = subscriber; }
+    public User getSubscriber() { return subscriber; }
+    public void setSubscriber(User subscriber) { this.subscriber = subscriber; }
     public Long getAssetId() { return assetId; }
     public void setAssetId(Long assetId) { this.assetId = assetId; }
-    public DigitalAsset getAsset() { return asset; }
-    public void setAsset(DigitalAsset asset) { this.asset = asset; }
+    public Asset getAsset() { return asset; }
+    public void setAsset(Asset asset) { this.asset = asset; }
     public Integer getQuotaLimit() { return quotaLimit; }
     public void setQuotaLimit(Integer quotaLimit) { this.quotaLimit = quotaLimit; }
     public Integer getQuotaUsed() { return quotaUsed; }
