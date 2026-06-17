@@ -31,7 +31,7 @@ DataHub 是一个面向开发者的数据资产共享与订阅平台，支持 Pr
 
 | 服务 | 地址 |
 |------|------|
-| 前端 GitHub Pages | https://leonnimlncc.github.io/DataHub/ |
+| 前端 GitHub Pages | https://leonnimincc.github.io/DataHub/ |
 | 后端 Render API | https://datahub-j2wt.onrender.com/api |
 | 后端健康入口 | https://datahub-j2wt.onrender.com |
 
@@ -50,10 +50,10 @@ MYSQLDATABASE=defaultdb
 MYSQLUSER=avnadmin
 MYSQLPASSWORD=<Aiven MySQL password>
 JWT_SECRET=<at least 32 characters>
-APP_CORS_ALLOWED_ORIGINS=https://leonnimlncc.github.io
+APP_CORS_ALLOWED_ORIGINS=https://leonnimincc.github.io
 ```
 
-后端 CORS 配置支持逗号分隔的多个来源；生产环境至少应包含 `https://leonnimlncc.github.io`。
+后端 CORS 配置支持逗号分隔的多个来源；生产环境至少应包含 `https://leonnimincc.github.io`。
 
 ## 项目结构
 
@@ -306,6 +306,17 @@ git push
 ```
 
 推送到 `main` 后，GitHub Actions 会自动构建前端并发布到 `gh-pages` 分支。Render 会检测后端代码更新并自动重新构建 Docker 服务。
+
+如果访问 GitHub Pages 出现 404，请到仓库设置中确认：
+
+```text
+Settings -> Pages -> Build and deployment
+Source: Deploy from a branch
+Branch: gh-pages
+Folder: / (root)
+```
+
+保存后等待 1-3 分钟，再访问 `https://leonnimincc.github.io/DataHub/`。
 
 ## 页面路由
 
