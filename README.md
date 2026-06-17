@@ -25,7 +25,35 @@ DataHub 是一个面向开发者的数据资产共享与订阅平台，支持 Pr
 | 数据库 | MySQL 8.0；Demo 模式使用 H2 内存数据库 |
 | 前端 | Vue 3, Vite 5, Vue Router, Pinia, Axios |
 | UI/图表 | Tailwind CSS, ECharts |
-| 部署 | Docker, Docker Compose |
+| 部署 | Render Docker, GitHub Pages, Docker Compose |
+
+## 线上部署
+
+| 服务 | 地址 |
+|------|------|
+| 前端 GitHub Pages | https://leonnimlncc.github.io/DataHub/ |
+| 后端 Render API | https://datahub-j2wt.onrender.com/api |
+| 后端健康入口 | https://datahub-j2wt.onrender.com |
+
+前端生产环境通过 `frontend/.env.production` 指向 Render 后端：
+
+```env
+VITE_API_BASE_URL=https://datahub-j2wt.onrender.com/api
+```
+
+Render 后端需要配置以下 Environment Variables：
+
+```text
+MYSQLHOST=mysql-eec8288-example2871003323-f708.d.aivencloud.com
+MYSQLPORT=14596
+MYSQLDATABASE=defaultdb
+MYSQLUSER=avnadmin
+MYSQLPASSWORD=<Aiven MySQL password>
+JWT_SECRET=<at least 32 characters>
+APP_CORS_ALLOWED_ORIGINS=https://leonnimlncc.github.io
+```
+
+后端 CORS 配置支持逗号分隔的多个来源；生产环境至少应包含 `https://leonnimlncc.github.io`。
 
 ## 项目结构
 
@@ -139,13 +167,6 @@ npm run dev
 ```
 
 ### 方式三：Docker Compose
-
-当前后端 Dockerfile 会复制 `backend/target/*.jar`，因此需要先构建后端 jar：
-
-```bash
-cd backend
-./mvnw clean package -DskipTests
-```
 
 回到项目根目录启动完整环境：
 
@@ -275,6 +296,16 @@ docker compose up --build
 docker compose -f docker-compose.demo.yml up --build
 docker compose down
 ```
+
+生产发布：
+
+```bash
+git add frontend/.env.production README.md backend/src/main/java/com/datahub/config/CorsConfig.java backend/src/main/resources/application.properties backend/src/main/resources/application.properties.template backend/src/main/resources/application-docker.properties
+git commit -m "Configure production frontend API"
+git push
+```
+
+推送到 `main` 后，GitHub Actions 会自动构建前端并发布到 `gh-pages` 分支。Render 会检测后端代码更新并自动重新构建 Docker 服务。
 
 ## 页面路由
 
