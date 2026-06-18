@@ -2,7 +2,9 @@ package com.datahub.service.impl;
 
 import com.datahub.dto.AssetRequest;
 import com.datahub.entity.Asset;
+import com.datahub.entity.User;
 import com.datahub.repository.AssetRepository;
+import com.datahub.repository.UserRepository;
 import com.datahub.service.AssetService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -13,9 +15,11 @@ import org.springframework.stereotype.Service;
 public class AssetServiceImpl implements AssetService {
 
     private final AssetRepository assetRepo;
+    private final UserRepository userRepo;
 
-    public AssetServiceImpl(AssetRepository assetRepo) {
+    public AssetServiceImpl(AssetRepository assetRepo, UserRepository userRepo) {
         this.assetRepo = assetRepo;
+        this.userRepo = userRepo;
     }
 
     @Override
@@ -41,8 +45,14 @@ public class AssetServiceImpl implements AssetService {
 
     @Override
     public Asset createAsset(Long providerId, AssetRequest request) {
+        User provider = userRepo.findById(providerId)
+                .orElseThrow(() -> new RuntimeException("当前用户不存在，无法发布资产"));
+        if (provider.getRole() != User.Role.PROVIDER) {
+            throw new RuntimeException("只有 Provider 可以发布资产");
+        }
+
         Asset asset = new Asset();
-        asset.setProviderId(providerId);
+        asset.setProvider(provider);
         asset.setTitle(request.getTitle());
         asset.setAssetType(Asset.AssetType.valueOf(request.getAssetType().toUpperCase()));
         asset.setDescription(request.getDescription());

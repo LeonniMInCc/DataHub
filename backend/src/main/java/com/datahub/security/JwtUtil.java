@@ -38,7 +38,14 @@ public class JwtUtil {
 
     public Long getDevIdFromToken(String token) {
         Claims claims = parseToken(token);
-        return claims.get("devId", Long.class);
+        Object devId = claims.get("devId");
+        if (devId instanceof Number number) {
+            return number.longValue();
+        }
+        if (devId instanceof String value) {
+            return Long.valueOf(value);
+        }
+        throw new JwtException("JWT 缺少有效的 devId");
     }
 
     public String getUsernameFromToken(String token) {

@@ -63,7 +63,10 @@ public class Asset {
     public Long getProviderId() { return providerId; }
     public void setProviderId(Long providerId) { this.providerId = providerId; }
     public User getProvider() { return provider; }
-    public void setProvider(User provider) { this.provider = provider; }
+    public void setProvider(User provider) {
+        this.provider = provider;
+        this.providerId = provider == null ? null : provider.getUserId();
+    }
     public String getTitle() { return title; }
     public void setTitle(String title) { this.title = title; }
     public AssetType getAssetType() { return assetType; }
